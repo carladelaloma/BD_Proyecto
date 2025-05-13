@@ -15,8 +15,6 @@ public class RolManager : MonoBehaviour
     public GameObject uiCanva;
 
     private string dbPath;
-    private float cooldownTime = 1.5f;
-    private float lastTeleportTime = -999f;
 
     void Start()
     {
@@ -56,8 +54,6 @@ public class RolManager : MonoBehaviour
 
     void InsertRolID(int rolID)
     {
-        if (Time.time < lastTeleportTime + cooldownTime)
-            return;
 
         dbPath = "URI=file:" + Application.dataPath + "/Plugins/among_db.sqlite";
 
@@ -70,8 +66,6 @@ public class RolManager : MonoBehaviour
                 cmd.ExecuteNonQuery();
             }
         }
-
-        lastTeleportTime = Time.time;
     }
 
     // Desactiva todos los botones y oculta el panel UI
