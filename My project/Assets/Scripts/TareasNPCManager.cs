@@ -139,10 +139,21 @@ public class TareasNPCManager : MonoBehaviour
             dbConnection.Open();
             using (IDbCommand cmd = dbConnection.CreateCommand())
             {
-                cmd.CommandText = $"UPDATE Tareas SET Estado = true WHERE ID = {tareaID}";
-                Debug.Log("Estado de tarea actualizado a TRUE para ID: " + tareaID);
+                // Prepara tu UPDATE
+                cmd.CommandText = $"UPDATE Tareas SET Estado = 1 WHERE ID = @id";
+                // Mejor usa parámetro para evitar inyecciones y problemas de tipo:
+                var param = cmd.CreateParameter();
+                param.ParameterName = "@id";
+                param.Value = tareaID;
+                cmd.Parameters.Add(param);
+
+                // Ejecuta realmente el comando
+                int rowsAffected = cmd.ExecuteNonQuery();
+                Debug.Log($"Estado de tarea actualizado a TRUE para ID: {tareaID}, filas afectadas: {rowsAffected}");
             }
+            dbConnection.Close();
         }
+
     }
 
     IEnumerator MoverNPC(GameObject npc, Vector3 destino)
