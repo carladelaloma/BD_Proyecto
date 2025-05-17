@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Trampilla_0: 3900000620605148907
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
