@@ -37,23 +37,25 @@ public class TareasNPCManager : MonoBehaviour
 
     IEnumerator AsignarRolYTarea(GameObject npc)
     {
-        yield return new WaitForSeconds(UnityEngine.Random.Range(5f, 10f));
+        int seed = npc.GetInstanceID() + DateTime.Now.Millisecond;
+        System.Random rng = new System.Random(seed);
 
-        int rolID = ObtenerRolAleatorio();
-        int salaID = ObtenerSalaFromRol(rolID);    
+        yield return new WaitForSeconds((float)(rng.NextDouble() * 5.0 + 5.0)); // 5 a 10 segundos
+
+        int rolID = ObtenerRolAleatorio(rng);
+        int salaID = ObtenerSalaFromRol(rolID, rng);
         int tareaID = GetTarea(rolID, salaID);
 
-        Debug.LogWarning("Para el ncp: " + npc + "rolid: " + rolID + "salaID:" + salaID + "tarea id: " + tareaID);
-        // Mover al NPC a la sala correspondiente
+        Debug.LogWarning("Para el NPC: " + npc.name + " | rolID: " + rolID + " | salaID: " + salaID + " | tareaID: " + tareaID);
+
         Vector3 destino = salaCoordenadas[salaID];
         yield return StartCoroutine(MoverNPC(npc, destino));
 
-        // Espera otros 5-10 segundos antes de actualizar el estado
-        yield return new WaitForSeconds(UnityEngine.Random.Range(5f, 10f));
+        yield return new WaitForSeconds((float)(rng.NextDouble() * 5.0 + 5.0));
         ActualizarEstadoTarea(tareaID);
     }
 
-    int ObtenerRolAleatorio()
+    int ObtenerRolAleatorio(System.Random rng)
     {
         List<int> roles = new List<int>();
 
@@ -65,7 +67,7 @@ public class TareasNPCManager : MonoBehaviour
                 cmd.CommandText = $"SELECT ID FROM Roles";
                 using (IDataReader reader = cmd.ExecuteReader())
                 {
-                    if (reader.Read())
+                    while (reader.Read())
                         roles.Add(reader.GetInt32(0));
                 }
             }
@@ -73,17 +75,17 @@ public class TareasNPCManager : MonoBehaviour
 
         if (roles.Count > 0)
         {
-            int index = UnityEngine.Random.Range(0, roles.Count);
+            int index = rng.Next(0, roles.Count);
             return roles[index];
         }
         else
         {
             Debug.LogError("No hay roles disponibles");
-            return 1; // Valor por defecto
+            return 1;
         }
     }
 
-    int ObtenerSalaFromRol(int rolID)
+    int ObtenerSalaFromRol(int rolID, System.Random rng)
     {
         List<int> posiblesSalas = new List<int>();
 
@@ -95,22 +97,15 @@ public class TareasNPCManager : MonoBehaviour
                 cmd.CommandText = $"SELECT Salas_ID FROM Tareas WHERE Rol_ID = {rolID}";
                 using (IDataReader reader = cmd.ExecuteReader())
                 {
-                    if (reader.Read()){
+                    while (reader.Read())
                         posiblesSalas.Add(reader.GetInt32(0));
-                        
-                        if (posiblesSalas.Count == 1){
-                            return posiblesSalas[0]; // Si solo hay una sala, la devuelve directamente
-                        }
-                        else{
-                            int index = UnityEngine.Random.Range(0, posiblesSalas.Count);
-                            return posiblesSalas[index];
-                        }
-                    }
-                    return -1; // Si no se encuentra la sala
-
                 }
             }
         }
+
+        if (posiblesSalas.Count == 0) return -1;
+        int index = rng.Next(0, posiblesSalas.Count);
+        return posiblesSalas[index];
 
     }
 

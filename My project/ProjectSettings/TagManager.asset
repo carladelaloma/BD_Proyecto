@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Vent
   - NPC
+  - Hat
+  - Suit
   layers:
   - Default
   - TransparentFX
