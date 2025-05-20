@@ -4,7 +4,7 @@ Carla De La Loma, Guillermo Torres, Guillermo Salicrú, Alejandro Nuñez.
 
 ## Diagrama E-R
 
-![Diagrama E-R](https://github.com/user-attachments/assets/516cae54-b7e5-4a84-a336-e1efc22d19d5)
+![Diagrama E-R](https://github.com/user-attachments/assets/97c1c299-c74f-416b-a4cd-0ac0fdb38acc)
 
 Nuestro diagrama consta de cinco entidades inspiradas en el juego de Among Us. La mayoría presentan una relación uno-a-muchos, ya que cada entidad principal está vinculada a múltiples elementos relacionados.
 
