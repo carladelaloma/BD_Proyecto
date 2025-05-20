@@ -15,7 +15,7 @@ public class KillManager : MonoBehaviour
     void Start()
     {
         dbPath = "URI=file:" + Application.dataPath + "/Plugins/among_db.sqlite";
-        killButton.onClick.AddListener(TryKill);
+        killButton.onClick.AddListener(TryKill);    
         killButton.gameObject.SetActive(false);
     }
 

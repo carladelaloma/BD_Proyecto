@@ -1,3 +1,6 @@
+using Mono.Data.Sqlite;
+using System.Data;
+using System.IO;
 using UnityEngine;
 
 public class PlayerHatCollector : MonoBehaviour
@@ -30,6 +33,19 @@ public class PlayerHatCollector : MonoBehaviour
             hat.transform.localRotation = Quaternion.identity;
 
             hasHat = true; // No permite pegar más
+            string dbPath = "URI=file:" + Application.dataPath + "/Plugins/among_db.sqlite";
+            using (IDbConnection dbConnection = new SqliteConnection(dbPath))
+            {
+                dbConnection.Open();
+                using (IDbCommand cmd = dbConnection.CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE Personajes SET Sombrero = 1 WHERE ID = 1";
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
+        
+
+
     }
 }

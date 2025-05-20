@@ -1,8 +1,10 @@
+using Mono.Data.Sqlite;
+using System.Data;
 using UnityEngine;
 
 public class PlayerSuitCollector : MonoBehaviour
 {
-    public Transform suitAttachPoint; // Pon aquí el Empty donde se colocará el traje
+    public Transform suitAttachPoint; 
     private bool hasSuit = false;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -13,7 +15,8 @@ public class PlayerSuitCollector : MonoBehaviour
         {
             GameObject suit = other.gameObject;
 
-            // Elimina física
+            
+
             if (suit.TryGetComponent<Rigidbody2D>(out var rb))
                 Destroy(rb);
 
@@ -29,6 +32,19 @@ public class PlayerSuitCollector : MonoBehaviour
             suit.transform.localRotation = Quaternion.identity;
 
             hasSuit = true;
+            string dbPath = "URI=file:" + Application.dataPath + "/Plugins/among_db.sqlite";
+            using (IDbConnection dbConnection = new SqliteConnection(dbPath))
+
+            {
+                dbConnection.Open();
+                using (IDbCommand cmd = dbConnection.CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE Personajes SET Traje = 1 WHERE ID = 1";
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
+        
+
     }
 }
