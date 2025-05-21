@@ -23,11 +23,15 @@ public class FullDatabaseExporter : MonoBehaviour
         foreach (string tabla in tablas)
         {
             List<Dictionary<string, object>> datos = ObtenerFilasDeTabla(tabla);
-            GuardarComoJSON(tabla, datos);
-            GuardarComoXML(tabla, datos);
+            List<SerializableRow> serializables = new List<SerializableRow>();
+            foreach (var fila in datos)
+                serializables.Add(new SerializableRow(fila));
+
+            GuardarComoJSON(tabla, serializables);
+            GuardarComoXML(tabla, serializables);
         }
 
-        Debug.Log("Exportaci�n completa de todas las tablas.");
+        Debug.Log("✅ Exportación completa de todas las tablas.");
     }
 
     List<string> ObtenerNombresDeTablas()
@@ -83,29 +87,24 @@ public class FullDatabaseExporter : MonoBehaviour
         return filas;
     }
 
-    void GuardarComoJSON(string tabla, List<Dictionary<string, object>> datos)
+    void GuardarComoJSON(string tabla, List<SerializableRow> datos)
     {
-        string json = JsonHelper.ToJson(datos, true);
+        string json = JsonUtility.ToJson(new SerializableRowList(datos), true);
         string ruta = Path.Combine(Application.persistentDataPath, tabla + ".json");
         File.WriteAllText(ruta, json);
-        Debug.Log("Exportado JSON: " + ruta);
+        Debug.Log("✅ Exportado JSON: " + ruta);
     }
 
-    void GuardarComoXML(string tabla, List<Dictionary<string, object>> datos)
+    void GuardarComoXML(string tabla, List<SerializableRow> datos)
     {
         string ruta = Path.Combine(Application.persistentDataPath, tabla + ".xml");
         XmlSerializer serializer = new XmlSerializer(typeof(List<SerializableRow>));
-        List<SerializableRow> filas = new List<SerializableRow>();
-
-        foreach (var dict in datos)
-            filas.Add(new SerializableRow(dict));
-
         using (FileStream stream = new FileStream(ruta, FileMode.Create))
         {
-            serializer.Serialize(stream, filas);
+            serializer.Serialize(stream, datos);
         }
 
-        Debug.Log("Exportado XML: " + ruta);
+        Debug.Log("✅ Exportado XML: " + ruta);
     }
 }
 
@@ -127,17 +126,13 @@ public class SerializableRow
     }
 }
 
-// Ayuda para convertir a JSON
-public static class JsonHelper
+[Serializable]
+public class SerializableRowList
 {
-    public static string ToJson(List<Dictionary<string, object>> list, bool pretty)
-    {
-        return JsonUtility.ToJson(new Wrapper { tabla = list }, pretty);
-    }
+    public List<SerializableRow> filas;
 
-    [Serializable]
-    private class Wrapper
+    public SerializableRowList(List<SerializableRow> filas)
     {
-        public List<Dictionary<string, object>> tabla;
+        this.filas = filas;
     }
 }
