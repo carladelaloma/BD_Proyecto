@@ -37,6 +37,9 @@ public class TareasNPCManager : MonoBehaviour
 
     IEnumerator AsignarRolYTarea(GameObject npc)
     {
+
+        if (npc == null) yield break;
+
         int seed = npc.GetInstanceID() + DateTime.Now.Millisecond;
         System.Random rng = new System.Random(seed);
 
